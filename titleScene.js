@@ -40,11 +40,14 @@ phina.define('TitleScene', {
     startBtn.text = "TALK START";
     startBtn.width = 400;
     startBtn.onpointend = function() {
-      console.log("!");
-      var scene = this.getParent();
-      scene.exit({
-        pushBtn: family,
-      });
+      if ( btnFlag ) {
+        var scene = this.getParent();
+        scene.exit({
+          pushBtn: family,
+        });
+      } else {
+        alert("家族構成を選択してね！");
+      }
     }
   },
 });
