@@ -3,9 +3,12 @@ phina.globalize();
 
 // MainScene クラスを定義
 phina.define('MainScene', {
-  superClass: 'CanvasScene',
+  superClass: 'DisplayScene',
   init: function() {
-    this.superInit();
+    this.superInit({
+      width: SCREEN_WIDTH,
+      height: SCREEN_HEIGHT
+    });
     // 背景色を指定
     this.backgroundColor = '#444';
     // ラベルを生成
@@ -20,7 +23,9 @@ phina.define('MainScene', {
 phina.main(function() {
   // アプリケーション生成
   var app = GameApp({
-    startLabel: 'main', // メインシーンから開始する
+    startLabel: 'title',
+    width: SCREEN_WIDTH,
+    height: SCREEN_HEIGHT
   });
   // アプリケーション実行
   app.run();
