@@ -179,7 +179,6 @@ phina.define('MainScene', {
       // dammy
       if (spriteKey === 'WordDammy') continue;
       // this.spriteXXX = Sprite("XXX").addChildTo(this)を生成して評価
-      console.log();
       eval('this.sprite' + spriteKey + ' = Sprite("' + spriteKey + '").addChildTo(this)');
       // this.spriteXXX.setPosition(spriteInfo["XXX"].x, spriteInfo["XXX"].y)を生成して評価
       eval('this.sprite' + spriteKey + '.setPosition(spriteInfo["' + spriteKey + '"].x, spriteInfo["' + spriteKey + '"].y)');
