@@ -16,6 +16,7 @@ var ASSETS = {
     'KeyC2Off': './image/key_c_off.png',
     'KeyC3Off': './image/key_c_off.png',
     'KeyC4Off': './image/key_c_off.png',
+    'WordDammy': './image/WordDammy.jpg'
   }
 }
 
@@ -64,22 +65,22 @@ const spriteInfo = {
     'y': 230,
     'width': 80,
     'height': 80
-  }
+  },
 }
 
 // キーごとの設定
 const keyScore = {
-  'F': {
+  'D': {
     'score': 3,
     'assetKey': 'KeyC',
   },
-  'D': {
+  'F': {
     'score': 4,
-    'assetKey': 'KeyC3',
+    'assetKey': 'KeyC2',
   },
   'J': {
     'score': 5,
-    'assetKey': 'KeyC2'
+    'assetKey': 'KeyC3'
   },
   'K': {
     'score': 6,
@@ -87,7 +88,14 @@ const keyScore = {
   },
 }
 
-var ASSETS
+// player_lineのy座標値
+const PLAYER_LINE_Y = 100;
+
+// wordオブジェクト
+const aryLaneD = [];
+const aryLaneF = [];
+const aryLaneJ = [];
+const aryLaneK = [];
 
 // MainScene クラスを定義
 phina.define('MainScene', {
@@ -113,8 +121,16 @@ phina.define('MainScene', {
     }).addChildTo(this)
       .setPosition(this.gridX.span(1),this.gridY.span(1));
 
+    // WordDammy
+    this.spriteDammy = Sprite('WordDammy').addChildTo(this);
+    this.spriteDammy.setPosition(800, 400);
+    this.spriteDammy.width = 50;
+    this.spriteDammy.height = 600;
+
     // スプライトを作成
     for (var spriteKey in spriteInfo) {
+      // dammy
+      if (spriteKey === 'WordDammy') continue;
       // this.spriteXXX = Sprite("XXX").addChildTo(this)を生成して評価
       eval('this.sprite' + spriteKey + ' = Sprite("' + spriteKey + '").addChildTo(this)');
       // this.spriteXXX.setPosition(spriteInfo["XXX"].x, spriteInfo["XXX"].y)を生成して評価
@@ -123,6 +139,7 @@ phina.define('MainScene', {
   },
   /**
    * キー入力によるゲーム開始制御、点数更新処理
+   * @param app object
    */
   update: function(app) {
     var keyboard = app.keyboard;
@@ -140,8 +157,9 @@ phina.define('MainScene', {
         // this.spriteXXX.setImage('XXXoff')をeval評価
         eval('this.sprite' + keyScore[key]['assetKey'] + '.setImage("' + keyScore[key]['assetKey'] + 'Off' +'")');
       } else {
-        // 離している間はスコア加算
-        this.score += keyScore[key]['score'];
+        // 離している、かつwordブロックがplayer_lineに重なっている間はスコア加算
+        const isHitWord = this.checkWordHit(eval('aryLane' + key));
+        if (isHitWord) this.score += keyScore[key]['score'];
       }
       // 離したタイミングでライトをonにする
       if (keyboard.getKeyUp(key)) {
@@ -149,6 +167,18 @@ phina.define('MainScene', {
       }
     }
     this.scoreLabel.text = this.score;
+  },
+  /**
+   * 対象レーンのブロックがplayer_line（仮）に重なっているか確認する
+   * @param ary_lane array
+   * @return boolean
+   */
+  checkWordHit: function(ary_lane) {
+    // mock処理
+    if (this.WordDammy.y <= PLAYER_LINE_Y && PLAYER_LINE_Y <= (this.WordDammy.y + this.WordDammy.height)) {
+      return true;
+    }
+    return false;
   }
 });
 
