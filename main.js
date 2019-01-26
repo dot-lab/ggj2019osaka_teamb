@@ -101,7 +101,7 @@ const spriteInfo = {
   },
   'BarInside': {
     'x': 950,
-    'y': 426.5
+    'y': 426.7
   }
 }
 
@@ -143,6 +143,8 @@ const keyScore = {
 const MAX_SCORE = 2000;
 // player_lineのy座標値
 const PLAYER_LINE_Y = 100;
+// 制限時間
+const TIME_LIMIT = 10;
 
 // wordオブジェクト
 const aryLaneS = [];
@@ -241,6 +243,8 @@ phina.define('MainScene', {
         eval('this.sprite' + keyScore[key]['assetKey'] + '.setImage("' + keyScore[key]['assetKey'] +'")');
       }
     }
+    // 制限時間がきたらスコア更新しない
+    if (this.timeLabel.text >= TIME_LIMIT) return;
     // スコア計算
     if (isScoreGet) {
       this.score += 10;
@@ -277,8 +281,10 @@ phina.define('MainScene', {
     * 時間管理をする
     */
     ctlTimeLabel: function(app) {
-      this.elapsedTime += app.deltaTime;
-      this.timeLabel.text = Math.floor(this.elapsedTime / 1000);
+      if (this.timeLabel.text < TIME_LIMIT) {
+        this.elapsedTime += app.deltaTime;
+        this.timeLabel.text = Math.floor(this.elapsedTime / 1000);
+      }
     }
 });
 
