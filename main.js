@@ -1,6 +1,3 @@
-// phina.js をグローバル領域に展開
-phina.globalize();
-
 // MainScene クラスを定義
 phina.define('MainScene', {
   superClass: 'DisplayScene',
@@ -23,7 +20,6 @@ phina.define('MainScene', {
 phina.main(function() {
   // アプリケーション生成
   var app = GameApp({
-    startLabel: 'title',
     width: SCREEN_WIDTH,
     height: SCREEN_HEIGHT
   });
