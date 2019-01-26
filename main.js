@@ -175,10 +175,13 @@ phina.define('MainScene', {
    */
   checkWordHit: function(ary_lane) {
     // mock処理
-    if (this.WordDammy.y <= PLAYER_LINE_Y && PLAYER_LINE_Y <= (this.WordDammy.y + this.WordDammy.height)) {
+    /*
+    if (this.spriteDammy.y <= PLAYER_LINE_Y && PLAYER_LINE_Y <= (this.spriteDammy.y + this.spriteDammy.height)) {
       return true;
     }
     return false;
+    */
+    return true;
   }
 });
 
