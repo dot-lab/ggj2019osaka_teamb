@@ -4,19 +4,24 @@ phina.globalize();
 // アセット
 var ASSETS = {
   image: {
-    'father' : './image/brother.png',
-    'Mother' : './image/brother.png',
-    'brother': './image/brother.png',
-    'KeyC' : './image/key_c_on.png',
-    'KeyC2' : './image/key_c_on.png',
-    'KeyCOff': './image/key_c_off.png',
-    'KeyC2Off': './image/key_c_off.png'
+    'Father'  : './image/brother.png',
+    'Mother'  : './image/brother.png',
+    'Brother' : './image/brother.png',
+    'Sister'  : './image/brother.png',
+    'KeyC'    : './image/key_c_on.png',
+    'KeyC2'   : './image/key_c_on.png',
+    'KeyC3'   : './image/key_c_on.png',
+    'KeyC4'   : './image/key_c_on.png',
+    'KeyCOff' : './image/key_c_off.png',
+    'KeyC2Off': './image/key_c_off.png',
+    'KeyC3Off': './image/key_c_off.png',
+    'KeyC4Off': './image/key_c_off.png',
   }
 }
 
 // 座標情報
 const spriteInfo = {
-  'father': {
+  'Father': {
     'x': 200,
     'y': 100,
     'width': 150,
@@ -28,8 +33,12 @@ const spriteInfo = {
     'width' : 150,
     'height': 150
   },
-  'brother': {
+  'Brother': {
     'x': 600,
+    'y': 100
+  },
+  'Sister': {
+    'x': 800,
     'y': 100
   },
   'KeyC': {
@@ -43,7 +52,39 @@ const spriteInfo = {
     'y': 230,
     'width': 80,
     'height': 80
+  },
+  'KeyC3': {
+    'x': 600,
+    'y': 230,
+    'width': 80,
+    'height': 80
+  },
+  'KeyC4': {
+    'x': 800,
+    'y': 230,
+    'width': 80,
+    'height': 80
   }
+}
+
+// キーごとの設定
+const keyScore = {
+  'F': {
+    'score': 3,
+    'assetKey': 'KeyC',
+  },
+  'D': {
+    'score': 4,
+    'assetKey': 'KeyC3',
+  },
+  'J': {
+    'score': 5,
+    'assetKey': 'KeyC2'
+  },
+  'K': {
+    'score': 6,
+    'assetKey': 'KeyC4',
+  },
 }
 
 var ASSETS
@@ -56,6 +97,7 @@ phina.define('MainScene', {
       width: SCREEN_WIDTH,
       height: SCREEN_HEIGHT
     });
+    this.isGameStart = false;
     // 背景色を指定
     this.backgroundColor = '#444';
     // ラベルを生成
@@ -71,47 +113,35 @@ phina.define('MainScene', {
     }).addChildTo(this)
       .setPosition(this.gridX.span(1),this.gridY.span(1));
 
-    // 父
-    this.spriteFather  = Sprite('father').addChildTo(this);
-    this.spriteFather.setPosition(spriteInfo['father'].x, spriteInfo['father'].y);
-    this.spriteFather.width = spriteInfo['father'].width;
-    this.spriteFather.height = spriteInfo['father'].height;
-    // 母
-    this.spriteMother  = Sprite('Mother').addChildTo(this);
-    this.spriteMother.setPosition(spriteInfo['Mother'].x, spriteInfo['Mother'].y);
-    this.spriteMother.width  = spriteInfo['Mother'].width;
-    this.spriteMother.height = spriteInfo['Mother'].height;
-    // ライト1
-    this.spriteKeyC  = Sprite('KeyC').addChildTo(this);
-    this.spriteKeyC.setPosition(spriteInfo['KeyC'].x, spriteInfo['KeyC'].y);
-    //this.spriteKeyC.width  = spriteInfo['KeyC'].width;
-    //this.spriteKeyC.height = spriteInfo['KeyC'].height;
-    // ライト2
-    this.spriteKeyC2  = Sprite('KeyC2').addChildTo(this);
-    this.spriteKeyC2.setPosition(spriteInfo['KeyC2'].x, spriteInfo['KeyC2'].y);
-    //this.spriteKeyC2.width  = spriteInfo['KeyC2'].width;
-    //this.spriteKeyC2.height = spriteInfo['KeyC2'].height;
+    // スプライトを作成
+    for (var spriteKey in spriteInfo) {
+      // this.spriteXXX = Sprite("XXX").addChildTo(this)を生成して評価
+      eval('this.sprite' + spriteKey + ' = Sprite("' + spriteKey + '").addChildTo(this)');
+      // this.spriteXXX.setPosition(spriteInfo["XXX"].x, spriteInfo["XXX"].y)を生成して評価
+      eval('this.sprite' + spriteKey + '.setPosition(spriteInfo["' + spriteKey + '"].x, spriteInfo["' + spriteKey + '"].y)');
+    }
   },
   /**
-   * キー入力による点数更新処理
+   * キー入力によるゲーム開始制御、点数更新処理
    */
   update: function(app) {
-    const keyScore = {
-      'F': {
-        'score': 3,
-        'assetKey': 'KeyC',
-      },
-      'J': {
-        'score': 4,
-        'assetKey': 'KeyC2'
-      }
-    }
     var keyboard = app.keyboard;
+    // ゲーム開始チェック。対象のキーが全て押された状態でゲームスタート
+    if (!this.isGameStart) {
+      for (var key in keyScore) {
+        // 全てのキーが押されていなければゲーム開始しない
+        if (!keyboard.getKey(key)) return;
+      }
+      this.isGameStart = true;
+    }
     for (var key in keyScore) {
       // キーを押している間、スコアを更新し、ライトをonにする
       if (keyboard.getKey(key)) {
-        this.score += keyScore[key]['score'];
+        // this.spriteXXX.setImage('XXXoff')をeval評価
         eval('this.sprite' + keyScore[key]['assetKey'] + '.setImage("' + keyScore[key]['assetKey'] + 'Off' +'")');
+      } else {
+        // 離している間はスコア加算
+        this.score += keyScore[key]['score'];
       }
       // 離したタイミングでライトをonにする
       if (keyboard.getKeyUp(key)) {
