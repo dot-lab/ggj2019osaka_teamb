@@ -164,6 +164,7 @@ phina.define('MainScene', {
     // 背景色を指定
     this.backgroundColor = '#444';
     this.score = 1000;
+    this.elapsedTime = 0; // 時間計測関数
 
     // WordDammy
     this.spriteDammy = Sprite('WordDammy').addChildTo(this);
@@ -181,6 +182,13 @@ phina.define('MainScene', {
       // this.spriteXXX.setPosition(spriteInfo["XXX"].x, spriteInfo["XXX"].y)を生成して評価
       eval('this.sprite' + spriteKey + '.setPosition(spriteInfo["' + spriteKey + '"].x, spriteInfo["' + spriteKey + '"].y)');
     }
+
+    this.timeLabel = Label({
+      text:this.elapsedTime,
+      fontSize:100,
+      fill:"white",
+    }).addChildTo(this)
+      .setPosition(this.gridX.span(8),50);
   },
   /**
    * キー入力によるゲーム開始制御、点数更新処理
@@ -198,6 +206,10 @@ phina.define('MainScene', {
       }
       this.isGameStart = true;
     }
+    // 時間計測
+    this.ctlTimeLabel(app);
+    // 1レーンでもfalseがあるとscoreが下がっていく
+    let isScoreGet = false;
     for (var key in keyScore) {
       // キーを押している間、スコアを更新し、ライトをoffにする
       if (keyboard.getKey(key)) {
@@ -207,7 +219,11 @@ phina.define('MainScene', {
         eval('this.sprite' + keyScore[key]['assetKey'] + '.setImage("' + keyScore[key]['assetKey'] + 'Off' +'")');
         // ボタンを押している間にwordが通っていたらmiss
         const isHitWord = this.checkWordHit(eval('aryLane' + key));
-        if (isHitWord) {}
+        if (isHitWord) {
+          isScoreGet = false;
+          // 顔を泣き顔に
+          eval('this.spriteFam' + keyScore[key]['famIndex'] + '.setImage("Fam' + keyScore[key]['famIndex'] + 'miss' +'")');
+        }
       } else {
         // 離している、かつwordブロックがplayer_lineに重なっている間はスコア加算し、顔を笑顔に
         const isHitWord = this.checkWordHit(eval('aryLane' + key));
@@ -216,7 +232,9 @@ phina.define('MainScene', {
           eval('this.spriteFam' + keyScore[key]['famIndex'] + '.setImage("Fam' + keyScore[key]['famIndex'] + 'success' +'")');
           this.score += keyScore[key]['score'];
         } else {
-          // miss
+          isScoreGet = false;
+          // 顔を泣き顔に
+          eval('this.spriteFam' + keyScore[key]['famIndex'] + '.setImage("Fam' + keyScore[key]['famIndex'] + 'miss' +'")');
         }
       }
       // 離したタイミングでライトをonにする
@@ -247,7 +265,14 @@ phina.define('MainScene', {
      this.spriteBarInside.height = 598 * this.score / MAX_SCORE;
      if (this.spriteBarInside.height > 598) this.spriteBarInside.height = 598;
      this.spriteBarInside.y = spriteInfo['BarInside']['y'] + (598 - this.spriteBarInside.height)  / 2;
-   }
+   },
+   /**
+    * 時間管理をする
+    */
+    ctlTimeLabel: function(app) {
+      this.elapsedTime += app.deltaTime;
+      this.timeLabel.text = Math.floor(this.elapsedTime / 1000);
+    }
 });
 
 // メイン処理
