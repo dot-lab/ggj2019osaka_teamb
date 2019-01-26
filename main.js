@@ -4,87 +4,127 @@ phina.globalize();
 // アセット
 var ASSETS = {
   image: {
-    'Father'  : './image/brother.png',
-    'Mother'  : './image/brother.png',
-    'Brother' : './image/brother.png',
-    'Sister'  : './image/brother.png',
-    'KeyC'    : './image/key_c_on.png',
-    'KeyC2'   : './image/key_c_on.png',
-    'KeyC3'   : './image/key_c_on.png',
-    'KeyC4'   : './image/key_c_on.png',
-    'KeyCOff' : './image/key_c_off.png',
-    'KeyC2Off': './image/key_c_off.png',
-    'KeyC3Off': './image/key_c_off.png',
-    'KeyC4Off': './image/key_c_off.png',
+    'Brother'        : './image/otouto_1.png',
+    'Brothermiss'    : './image/otouto_2.png',
+    'Brothersuccess' : './image/otouto_3.png',
+    'Ane'          : './image/ane_1.png',
+    'Anemiss'      : './image/ane_2.png',
+    'Anesuccess'   : './image/ane_3.png',
+    'Imouto'       : './image/ane_1.png',
+    'Imoutomiss'   : './image/ane_2.png',
+    'Imoutosyccess': './image/ane_3.png',
+    'Brother2'        : './image/otouto_1.png',
+    'Brother2miss'    : './image/otouto_2.png',
+    'Brother2success' : './image/otouto_3.png',
+    'Ane2'          : './image/ane_1.png',
+    'Ane2miss'      : './image/ane_2.png',
+    'Ane2success'   : './image/ane_3.png',
+    'Imouto2'       : './image/ane_1.png',
+    'Imouto2miss'   : './image/ane_2.png',
+    'Imouto2syccess': './image/ane_3.png',
+    'KeyX'    : './image/key_x_on.png',
+    'KeyC'   : './image/key_c_on.png',
+    'KeyV'   : './image/key_v_on.png',
+    'KeyB'   : './image/key_b_on.png',
+    'KeyM'   : './image/key_m_on.png',
+    'KeyN'   : './image/key_n_on.png',
+    'KeyXOff': './image/key_x_off.png',
+    'KeyCOff': './image/key_c_off.png',
+    'KeyVOff': './image/key_v_off.png',
+    'KeyBOff': './image/key_b_off.png',
+    'KeyMOff': './image/key_m_off.png',
+    'KeyNOff': './image/key_n_off.png',
+    'Bg6'    : './image/bg6.png',
+    'BarOutside': './image/bar_outside.png',
     'WordDammy': './image/WordDammy.jpg'
   }
 }
 
 // 座標情報
 const spriteInfo = {
-  'Father': {
-    'x': 200,
-    'y': 100,
-    'width': 150,
-    'height': 150
-  },
-  'Mother': {
-    'x': 400,
-    'y': 100,
-    'width' : 150,
-    'height': 150
+  'Bg6': {
+    'x': 512,
+    'y': 384
   },
   'Brother': {
-    'x': 600,
+    'x': 70,
     'y': 100
   },
-  'Sister': {
-    'x': 800,
+  'Ane': {
+    'x': 210,
     'y': 100
+  },
+  'Imouto': {
+    'x': 350,
+    'y': 100
+  },
+  'Brother2': {
+    'x': 490,
+    'y': 100
+  },
+  'Ane2': {
+    'x': 630,
+    'y': 100
+  },
+  'Imouto2': {
+    'x': 770,
+    'y': 100
+  },
+  'KeyX': {
+    'x': 70,
+    'y': 240,
   },
   'KeyC': {
-    'x': 200,
-    'y': 230,
-    'width': 80,
-    'height': 80
+    'x': 210,
+    'y': 240,
   },
-  'KeyC2': {
-    'x': 400,
-    'y': 230,
-    'width': 80,
-    'height': 80
+  'KeyV': {
+    'x': 350,
+    'y': 240,
   },
-  'KeyC3': {
-    'x': 600,
-    'y': 230,
-    'width': 80,
-    'height': 80
+  'KeyB': {
+    'x': 490,
+    'y': 240,
   },
-  'KeyC4': {
-    'x': 800,
-    'y': 230,
-    'width': 80,
-    'height': 80
+  'KeyM': {
+    'x': 630,
+    'y': 240,
   },
+  'KeyN': {
+    'x': 770,
+    'y': 240,
+  },
+  'BarOutside': {
+    'x': 950,
+    'y': 384
+  }
 }
 
 // キーごとの設定
 const keyScore = {
+  'S': {
+    'score': 2,
+    'assetKey': 'KeyX',
+  },
   'D': {
     'score': 3,
     'assetKey': 'KeyC',
   },
   'F': {
     'score': 4,
-    'assetKey': 'KeyC2',
+    'assetKey': 'KeyV',
   },
   'J': {
     'score': 5,
-    'assetKey': 'KeyC3'
+    'assetKey': 'KeyB'
   },
   'K': {
     'score': 6,
-    'assetKey': 'KeyC4',
+    'assetKey': 'KeyM',
+  },
+  'L': {
+    'score': 6,
+    'assetKey': 'KeyN',
   },
 }
 
@@ -92,10 +132,12 @@ const keyScore = {
 const PLAYER_LINE_Y = 100;
 
 // wordオブジェクト
+const aryLaneS = [];
 const aryLaneD = [];
 const aryLaneF = [];
 const aryLaneJ = [];
 const aryLaneK = [];
+const aryLaneL = [];
 
 // MainScene クラスを定義
 phina.define('MainScene', {
@@ -132,6 +174,7 @@ phina.define('MainScene', {
       // dammy
       if (spriteKey === 'WordDammy') continue;
       // this.spriteXXX = Sprite("XXX").addChildTo(this)を生成して評価
+      console.log();
       eval('this.sprite' + spriteKey + ' = Sprite("' + spriteKey + '").addChildTo(this)');
       // this.spriteXXX.setPosition(spriteInfo["XXX"].x, spriteInfo["XXX"].y)を生成して評価
       eval('this.sprite' + spriteKey + '.setPosition(spriteInfo["' + spriteKey + '"].x, spriteInfo["' + spriteKey + '"].y)');
@@ -156,6 +199,9 @@ phina.define('MainScene', {
       if (keyboard.getKey(key)) {
         // this.spriteXXX.setImage('XXXoff')をeval評価
         eval('this.sprite' + keyScore[key]['assetKey'] + '.setImage("' + keyScore[key]['assetKey'] + 'Off' +'")');
+        // ボタンを押している間にwordが通っていたらmiss
+        const isHitWord = this.checkWordHit(eval('aryLane' + key));
+        if (isHitWord) {}
       } else {
         // 離している、かつwordブロックがplayer_lineに重なっている間はスコア加算
         const isHitWord = this.checkWordHit(eval('aryLane' + key));
