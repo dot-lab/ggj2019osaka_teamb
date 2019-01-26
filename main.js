@@ -163,18 +163,7 @@ phina.define('MainScene', {
     this.isGameStart = false;
     // 背景色を指定
     this.backgroundColor = '#444';
-    // ラベルを生成
-    this.label = Label('Hello, phina.js!').addChildTo(this);
-    this.label.x = this.gridX.center(); // x 座標
-    this.label.y = this.gridY.center(); // y 座標
-    this.label.fill = 'white'; // 塗りつぶし色
     this.score = 1000;
-    this.scoreLabel = Label({
-      text:"0",
-      fontSize:60,
-      fill:"white",
-    }).addChildTo(this)
-      .setPosition(this.gridX.span(1),this.gridY.span(1));
 
     // WordDammy
     this.spriteDammy = Sprite('WordDammy').addChildTo(this);
@@ -235,7 +224,6 @@ phina.define('MainScene', {
         eval('this.sprite' + keyScore[key]['assetKey'] + '.setImage("' + keyScore[key]['assetKey'] +'")');
       }
     }
-    this.scoreLabel.text = this.score;
   },
   /**
    * 対象レーンのブロックがplayer_line（仮）に重なっているか確認する
