@@ -101,7 +101,7 @@ const spriteInfo = {
   },
   'BarInside': {
     'x': 950,
-    'y': 430
+    'y': 426.5
   }
 }
 
@@ -209,7 +209,7 @@ phina.define('MainScene', {
     // 時間計測
     this.ctlTimeLabel(app);
     // 1レーンでもfalseがあるとscoreが下がっていく
-    let isScoreGet = false;
+    let isScoreGet = true;
     for (var key in keyScore) {
       // キーを押している間、スコアを更新し、ライトをoffにする
       if (keyboard.getKey(key)) {
@@ -230,7 +230,6 @@ phina.define('MainScene', {
         if (isHitWord) {
           // this.spriteXXX.setImage('XXXoff')をeval評価 顔を笑顔に
           eval('this.spriteFam' + keyScore[key]['famIndex'] + '.setImage("Fam' + keyScore[key]['famIndex'] + 'success' +'")');
-          this.score += keyScore[key]['score'];
         } else {
           isScoreGet = false;
           // 顔を泣き顔に
@@ -241,6 +240,12 @@ phina.define('MainScene', {
       if (keyboard.getKeyUp(key)) {
         eval('this.sprite' + keyScore[key]['assetKey'] + '.setImage("' + keyScore[key]['assetKey'] +'")');
       }
+    }
+    // スコア計算
+    if (isScoreGet) {
+      this.score += 10;
+    } else {
+      this.score -= 10;
     }
   },
   /**
@@ -263,7 +268,9 @@ phina.define('MainScene', {
    */
    ctlScoreBar: function() {
      this.spriteBarInside.height = 598 * this.score / MAX_SCORE;
-     if (this.spriteBarInside.height > 598) this.spriteBarInside.height = 598;
+     // 上限下限を設定
+     if (this.score > MAX_SCORE) this.score = MAX_SCORE;
+     if (this.score < 0) this.score = 0;
      this.spriteBarInside.y = spriteInfo['BarInside']['y'] + (598 - this.spriteBarInside.height)  / 2;
    },
    /**
