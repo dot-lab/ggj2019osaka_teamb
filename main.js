@@ -49,27 +49,27 @@ const spriteInfo = {
   },
   'Fam1': {
     'x': 70,
-    'y': 100
+    'y': 160
   },
   'Fam2': {
     'x': 210,
-    'y': 100
+    'y': 160
   },
   'Fam3': {
     'x': 350,
-    'y': 100
+    'y': 160
   },
   'Fam4': {
     'x': 490,
-    'y': 100
+    'y': 160
   },
   'Fam5': {
     'x': 630,
-    'y': 100
+    'y': 160
   },
   'Fam6': {
     'x': 770,
-    'y': 100
+    'y': 160
   },
   'KeyX': {
     'x': 70,
@@ -258,7 +258,7 @@ phina.define('MainScene', {
    ctlScoreBar: function() {
      this.spriteBarInside.height = 598 * this.score / MAX_SCORE;
      if (this.spriteBarInside.height > 598) this.spriteBarInside.height = 598;
-     this.spriteBarInside.y = 430 + (598 - this.spriteBarInside.height)  / 2;
+     this.spriteBarInside.y = spriteInfo['BarInside']['y'] + (598 - this.spriteBarInside.height)  / 2;
    }
 });
 
