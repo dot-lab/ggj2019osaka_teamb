@@ -4,40 +4,42 @@ phina.globalize();
 // アセット
 var ASSETS = {
   image: {
-    'Fam1'        : './image/titi_1.png',
-    'Fam1miss'    : './image/titi_2.png',
-    'Fam1success' : './image/titi_3.png',
+    'Fam1'        :   './image/titi_1.png',
+    'Fam1miss'    :   './image/titi_2.png',
+    'Fam1success' :   './image/titi_3.png',
     'Fam2'          : './image/haha_1.png',
     'Fam2miss'      : './image/haha_2.png',
     'Fam2success'   : './image/haha_3.png',
-    'Fam3'       : './image/ani_1.png',
-    'Fam3miss'   : './image/ani_2.png',
-    'Fam3success': './image/ani_3.png',
-    'Fam4'        : './image/ane_1.png',
-    'Fam4miss'    : './image/ane_2.png',
-    'Fam4success' : './image/ane_3.png',
+    'Fam3'       :    './image/ani_1.png',
+    'Fam3miss'   :    './image/ani_2.png',
+    'Fam3success':    './image/ani_3.png',
+    'Fam4'        :   './image/ane_1.png',
+    'Fam4miss'    :   './image/ane_2.png',
+    'Fam4success' :   './image/ane_3.png',
     'Fam5'          : './image/otouto_1.png',
     'Fam5miss'      : './image/otouto_2.png',
     'Fam5success'   : './image/otouto_3.png',
-    'Fam6'       : './image/imouto_1.png',
-    'Fam6miss'   : './image/imouto_2.png',
-    'Fam6success': './image/imouto_3.png',
-    'KeyX'    : './image/key_x_on.png',
-    'KeyC'   : './image/key_c_on.png',
-    'KeyV'   : './image/key_v_on.png',
-    'KeyB'   : './image/key_b_on.png',
-    'KeyM'   : './image/key_m_on.png',
-    'KeyN'   : './image/key_n_on.png',
-    'KeyXOff': './image/key_x_off.png',
-    'KeyCOff': './image/key_c_off.png',
-    'KeyVOff': './image/key_v_off.png',
-    'KeyBOff': './image/key_b_off.png',
-    'KeyMOff': './image/key_m_off.png',
-    'KeyNOff': './image/key_n_off.png',
-    'Bg6'    : './image/bg6.png',
-    'BarInside': './image/bar_inside.png',
-    'BarOutside': './image/bar_outside.png',
-    'WordDammy': './image/WordDammy.jpg'
+    'Fam6'       :    './image/imouto_1.png',
+    'Fam6miss'   :    './image/imouto_2.png',
+    'Fam6success':    './image/imouto_3.png',
+    'KeyX'    :       './image/key_x_on.png',
+    'KeyC'   :        './image/key_c_on.png',
+    'KeyV'   :        './image/key_v_on.png',
+    'KeyB'   :        './image/key_b_on.png',
+    'KeyM'   :        './image/key_m_on.png',
+    'KeyN'   :        './image/key_n_on.png',
+    'KeyXOff':        './image/key_x_off.png',
+    'KeyCOff':        './image/key_c_off.png',
+    'KeyVOff':        './image/key_v_off.png',
+    'KeyBOff':        './image/key_b_off.png',
+    'KeyMOff':        './image/key_m_off.png',
+    'KeyNOff':        './image/key_n_off.png',
+    'Bg6'    :        './image/bg6.png',
+    'BarInside':      './image/bar_inside.png',
+    'BarOutside':     './image/bar_outside.png',
+    'BarMissInside' : './image/barMissInside.png',
+    'BarMissOutside': './image/barMissOutside.png',
+    'WordDammy':      './image/WordDammy.jpg'
   }
 }
 
@@ -144,7 +146,7 @@ const MAX_SCORE = 2000;
 // player_lineのy座標値
 const PLAYER_LINE_Y = 100;
 // 制限時間
-const TIME_LIMIT = 10;
+const TIME_LIMIT = 60;
 
 // wordオブジェクト
 const aryLaneS = [];
@@ -270,10 +272,19 @@ phina.define('MainScene', {
    * スコアバーの表示を調節する
    */
    ctlScoreBar: function() {
+     // scoreが30%を超えているかどうかで画像を切り替える
+     if (this.score / MAX_SCORE < 0.3) {
+       this.spriteBarInside.setImage('BarMissInside');
+       this.spriteBarOutside.setImage('BarMissOutside');
+     } else {
+       this.spriteBarInside.setImage('BarInside');
+       this.spriteBarOutside.setImage('BarOutside');
+     }
      this.spriteBarInside.height = 598 * this.score / MAX_SCORE;
      // 上限下限を設定
      if (this.score > MAX_SCORE) this.score = MAX_SCORE;
      if (this.score < 0) this.score = 0;
+     // 表示位置を調整
      this.spriteBarInside.y = spriteInfo['BarInside']['y'] + (598 - this.spriteBarInside.height)  / 2;
    },
    /**
