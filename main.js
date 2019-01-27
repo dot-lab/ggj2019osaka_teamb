@@ -91,10 +91,6 @@ var ASSETS = {
 
 // 座標情報
 const spriteInfo = {
-  'Bg6': {
-    'x': 512,
-    'y': 384
-  },
   'Fam1': {
     'x': 70,
     'y': 160
@@ -363,6 +359,16 @@ phina.define('MainScene', {
     this.score = 1000;
     this.elapsedTime = 0; // 時間計測関数
 
+    // 背景spriteを作成
+    this.spriteBg6 = Sprite("Bg6").addChildTo(this);
+    this.spriteBg6.setPosition(512, 384);
+
+    // wordスプライトを作成
+    for (var wordSpriteKey in spriteWordInfo) {
+      eval('this.sprite' + wordSpriteKey + ' = Sprite("' + wordSpriteKey + '").addChildTo(this)');
+      eval('this.sprite' + wordSpriteKey + '.setPosition(spriteWordInfo["' + wordSpriteKey + '"].x, spriteWordInfo["' + wordSpriteKey + '"].y)');
+      eval('aryLane' + spriteWordInfo[wordSpriteKey]['button'] + '["' + wordSpriteKey + '"] = this.sprite' + wordSpriteKey);
+    }
 
     // スプライトを作成
     for (var spriteKey in spriteInfo) {
@@ -370,13 +376,6 @@ phina.define('MainScene', {
       eval('this.sprite' + spriteKey + ' = Sprite("' + spriteKey + '").addChildTo(this)');
       // this.spriteXXX.setPosition(spriteInfo["XXX"].x, spriteInfo["XXX"].y)を生成して評価
       eval('this.sprite' + spriteKey + '.setPosition(spriteInfo["' + spriteKey + '"].x, spriteInfo["' + spriteKey + '"].y)');
-    }
-
-    // wordスプライトを作成
-    for (var wordSpriteKey in spriteWordInfo) {
-      eval('this.sprite' + wordSpriteKey + ' = Sprite("' + wordSpriteKey + '").addChildTo(this)');
-      eval('this.sprite' + wordSpriteKey + '.setPosition(spriteWordInfo["' + wordSpriteKey + '"].x, spriteWordInfo["' + wordSpriteKey + '"].y)');
-      eval('aryLane' + spriteWordInfo[wordSpriteKey]['button'] + '["' + wordSpriteKey + '"] = this.sprite' + wordSpriteKey);
     }
 
     this.timeLabel = Label({
@@ -421,6 +420,8 @@ phina.define('MainScene', {
         const isHitWord = this.checkWordHit(eval('aryLane' + key));
         if (isHitWord['isHit']) {
           isScoreGet = false;
+          // wordブロックをピンクに
+          eval('this.sprite' + isHitWord['hitKey'] + '.setImage("' + isHitWord['hitKey'] + '")');
           // 顔を泣き顔に
           eval('this.spriteFam' + keyScore[key]['famIndex'] + '.setImage("Fam' + keyScore[key]['famIndex'] + 'miss' +'")');
         }
@@ -428,6 +429,7 @@ phina.define('MainScene', {
         // 離している、かつwordブロックがplayer_lineに重なっている間はスコア加算し、顔を笑顔に
         const isHitWord = this.checkWordHit(eval('aryLane' + key));
         if (isHitWord['isHit']) {
+          // wordブロックをピンクに
           eval('this.sprite' + isHitWord['hitKey'] + '.setImage("' + isHitWord['hitKey'] + 'success")');
           // this.spriteXXX.setImage('XXXoff')をeval評価 顔を笑顔に
           eval('this.spriteFam' + keyScore[key]['famIndex'] + '.setImage("Fam' + keyScore[key]['famIndex'] + 'success' +'")');
