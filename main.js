@@ -14,6 +14,7 @@ var ASSETS = {
     'Fam3miss'   :    './image/ani_2.png',
     'Fam3success':    './image/ani_3.png',
     'Fam4'        :   './image/ane_1.png',
+    // 'Fam4miss'    :   './image/ane_miss.gif',
     'Fam4miss'    :   './image/ane_2.png',
     'Fam4success' :   './image/ane_3.png',
     'Fam5'          : './image/otouto_1.png',
@@ -21,6 +22,7 @@ var ASSETS = {
     'Fam5success'   : './image/otouto_3.png',
     'Fam6'       :    './image/imouto_1.png',
     'Fam6miss'   :    './image/imouto_2.png',
+    // 'Fam6miss'   :    './image/imouto_miss.png',
     'Fam6success':    './image/imouto_3.png',
     'KeyX'    :       './image/key_x_off.png',
     'KeyC'   :        './image/key_c_off.png',
@@ -87,6 +89,7 @@ var ASSETS = {
     'Word22success':   './image/msg_p_22.png',
     'Word23success':   './image/msg_p_23.png',
     'BgHeader':        './image/bg_header.png',
+    'ClearLine':       './image/clear_line.png',
   }
 }
 
@@ -151,6 +154,10 @@ const spriteInfo = {
   'BarInside': {
     'x': 950,
     'y': 426.7
+  },
+  'ClearLine': {
+    'x': 950,
+    'y': 540
   },
   'Title': {
     'x': 500,
@@ -338,7 +345,8 @@ const MAX_SCORE = 2000;
 // player_lineのy座標値
 const PLAYER_LINE_Y = 240;
 // 制限時間
-const TIME_LIMIT = 60;
+const TIME_LIMIT = 30;
+//const TIME_LIMIT = 60;
 // 移動速度
 const MOVE_SPEED = 15;
 // スコア発生管理関数
@@ -418,6 +426,7 @@ phina.define('MainScene', {
     this.moveWord();
     // 1レーンでもfalseがあるとscoreが下がっていく
     let isScoreGet = SCORE_STAY;
+    let isVibrate  = false; //振動管理
     for (var key in keyScore) {
       // キーを押している間、スコアを更新し、ライトをoffにする
       if (keyboard.getKey(key)) {
@@ -433,6 +442,9 @@ phina.define('MainScene', {
           eval('this.sprite' + isHitWord['hitKey'] + '.setImage("' + isHitWord['hitKey'] + '")');
           // 顔を泣き顔に
           eval('this.spriteFam' + keyScore[key]['famIndex'] + '.setImage("Fam' + keyScore[key]['famIndex'] + 'miss' +'")');
+          // 顔を振動
+          eval('this.vibrateSprite(this.spriteFam' + keyScore[key]['famIndex'] + ')');
+          isVibrate = true;
         }
       } else {
         // 離している、かつwordブロックがplayer_lineに重なっている間はスコア加算し、顔を笑顔に
@@ -447,7 +459,16 @@ phina.define('MainScene', {
           isScoreGet = SCORE_FAILURE;
           // 顔を泣き顔に
           eval('this.spriteFam' + keyScore[key]['famIndex'] + '.setImage("Fam' + keyScore[key]['famIndex'] + 'miss' +'")');
+          // 顔を振動
+          eval('this.vibrateSprite(this.spriteFam' + keyScore[key]['famIndex'] + ')');
+          isVibrate = true;
         }
+      }
+      // 振動していなければもとの位置に戻す
+      if (!isVibrate) {
+        console.log('this.spriteFam' + keyScore[key]['famIndex'] + '.x = spriteInfo[Fam' + keyScore[key]['famIndex'] + '"].x');
+        eval('this.spriteFam' + keyScore[key]['famIndex'] + '.x = spriteInfo["Fam' + keyScore[key]['famIndex'] + '"].x');
+        eval('this.spriteFam' + keyScore[key]['famIndex'] + '.y = spriteInfo["Fam' + keyScore[key]['famIndex'] + '"].y');
       }
       // 離したタイミングでライトをonにする
       if (keyboard.getKeyUp(key)) {
@@ -458,9 +479,9 @@ phina.define('MainScene', {
     if (this.timeLabel.text >= TIME_LIMIT) return;
     // スコア計算
     if (isScoreGet === SCORE_GET) {
-      this.score += 5;
+      this.score += 10;
     } else if (isScoreGet === SCORE_FAILURE){
-      this.score -= 30;
+      this.score -= 10;
     }
   },
   /**
@@ -516,36 +537,60 @@ phina.define('MainScene', {
      */
      moveWord: function() {
        for (var spriteWordKey in aryLaneX) {
-         if (spriteWordInfo[spriteWordKey].time <= this.timeLabel.text) {
+         if (spriteWordInfo[spriteWordKey].time / 2 <= this.timeLabel.text) {
            aryLaneX[spriteWordKey].y -= MOVE_SPEED;
          }
        }
        for (var spriteWordKey in aryLaneC) {
-         if (spriteWordInfo[spriteWordKey].time <= this.timeLabel.text) {
+         if (spriteWordInfo[spriteWordKey].time / 2<= this.timeLabel.text) {
            aryLaneC[spriteWordKey].y -= MOVE_SPEED;
          }
        }
        for (var spriteWordKey in aryLaneV) {
-         if (spriteWordInfo[spriteWordKey].time <= this.timeLabel.text) {
+         if (spriteWordInfo[spriteWordKey].time / 2 <= this.timeLabel.text) {
            aryLaneV[spriteWordKey].y -= MOVE_SPEED;
          }
        }
        for (var spriteWordKey in aryLaneB) {
-         if (spriteWordInfo[spriteWordKey].time <= this.timeLabel.text) {
+         if (spriteWordInfo[spriteWordKey].time / 2<= this.timeLabel.text) {
            aryLaneB[spriteWordKey].y -= MOVE_SPEED;
          }
        }
        for (var spriteWordKey in aryLaneN) {
-         if (spriteWordInfo[spriteWordKey].time <= this.timeLabel.text) {
+         if (spriteWordInfo[spriteWordKey].time / 2<= this.timeLabel.text) {
            aryLaneN[spriteWordKey].y -= MOVE_SPEED;
          }
        }
        for (var spriteWordKey in aryLaneM) {
-         if (spriteWordInfo[spriteWordKey].time <= this.timeLabel.text) {
+         if (spriteWordInfo[spriteWordKey].time / 2 <= this.timeLabel.text) {
            aryLaneM[spriteWordKey].y -= MOVE_SPEED;
          }
        }
-     }
+     },
+     /**
+      * 対象spriteを振動させる
+      * @sprite
+      */
+      vibrateSprite: function(sprite) {
+        const currentX = sprite.x;
+        const currentY = sprite.y;
+        const currentRotate = sprite.rotate;
+        const random = Math.floor(Math.random() * 6);
+        console.log(random);
+        if (random % 6 == 0) {
+          sprite.x += 5;
+        } else if (random % 6 == 1) {
+          sprite.x -= 5;
+        } else if (random % 6 == 2) {
+          sprite.y += 5;
+        } else if (random % 6 == 3) {
+          sprite.y -= 5;
+        } else if (random % 6 == 4) {
+          sprite.rotate = 20;
+        } else {
+          sprite.rotate = -20;
+        }
+      }
 });
 
 // メイン処理
