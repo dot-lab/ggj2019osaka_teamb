@@ -41,7 +41,7 @@ var ASSETS = {
     'BarOutside':     './image/bar_outside.png',
     'BarMissInside' : './image/barMissInside.png',
     'BarMissOutside': './image/barMissOutside.png',
-    'Title':          './image/Title.png',
+    'Title':          './image/title_press.png',
     'Word1':          './image/msg01.png',
     'Word2':          './image/msg02.png',
     'Word3':          './image/msg03.png',
@@ -371,6 +371,7 @@ phina.define('MainScene', {
       height: SCREEN_HEIGHT
     });
     this.isGameStart = false;
+    this.isGameClear = false;
     // 背景色を指定
     this.backgroundColor = '#444';
     this.score = 1000;
@@ -394,6 +395,7 @@ phina.define('MainScene', {
       // this.spriteXXX.setPosition(spriteInfo["XXX"].x, spriteInfo["XXX"].y)を生成して評価
       eval('this.sprite' + spriteKey + '.setPosition(spriteInfo["' + spriteKey + '"].x, spriteInfo["' + spriteKey + '"].y)');
     }
+    this.changeFamFace('success');
 
     this.timeLabel = Label({
       text:this.elapsedTime,
@@ -412,9 +414,20 @@ phina.define('MainScene', {
     var keyboard = app.keyboard;
     // ゲーム開始チェック。対象のキーが全て押された状態でゲームスタート
     if (!this.isGameStart) {
+      // 待機状態でボタンを押されたら点灯させる
+      for (var key in keyScore) {
+        eval('this.sprite' + keyScore[key]['assetKey'] + '.setImage("' + keyScore[key]['assetKey'] +'")');
+        eval('this.spriteFam' + keyScore[key]['famIndex'] + '.setImage("Fam' + keyScore[key]['famIndex'] + 'success'+ '")');
+        if(keyboard.getKey(key)) {
+          eval('this.sprite' + keyScore[key]['assetKey'] + '.setImage("' + keyScore[key]['assetKey'] + 'Off' +'")');
+          eval('this.spriteFam' + keyScore[key]['famIndex'] + '.setImage("Fam' + keyScore[key]['famIndex'] + '")');
+        }
+      }
       for (var key in keyScore) {
         // 全てのキーが押されていなければゲーム開始しない
-        if (!keyboard.getKey(key)) return;
+        if (!keyboard.getKey(key)) {
+          return;
+        }
       }
       this.isGameStart = true;
     }
@@ -443,7 +456,9 @@ phina.define('MainScene', {
           // 顔を泣き顔に
           eval('this.spriteFam' + keyScore[key]['famIndex'] + '.setImage("Fam' + keyScore[key]['famIndex'] + 'miss' +'")');
           // 顔を振動
-          eval('this.vibrateSprite(this.spriteFam' + keyScore[key]['famIndex'] + ')');
+          if (!this.isGameClear) {
+            eval('this.vibrateSprite(this.spriteFam' + keyScore[key]['famIndex'] + ')');
+          }
           isVibrate = true;
         }
       } else {
@@ -460,13 +475,14 @@ phina.define('MainScene', {
           // 顔を泣き顔に
           eval('this.spriteFam' + keyScore[key]['famIndex'] + '.setImage("Fam' + keyScore[key]['famIndex'] + 'miss' +'")');
           // 顔を振動
-          eval('this.vibrateSprite(this.spriteFam' + keyScore[key]['famIndex'] + ')');
+          if (!this.isGameClear) {
+            eval('this.vibrateSprite(this.spriteFam' + keyScore[key]['famIndex'] + ')');
+          }
           isVibrate = true;
         }
       }
       // 振動していなければもとの位置に戻す
       if (!isVibrate) {
-        console.log('this.spriteFam' + keyScore[key]['famIndex'] + '.x = spriteInfo[Fam' + keyScore[key]['famIndex'] + '"].x');
         eval('this.spriteFam' + keyScore[key]['famIndex'] + '.x = spriteInfo["Fam' + keyScore[key]['famIndex'] + '"].x');
         eval('this.spriteFam' + keyScore[key]['famIndex'] + '.y = spriteInfo["Fam' + keyScore[key]['famIndex'] + '"].y');
       }
@@ -476,7 +492,10 @@ phina.define('MainScene', {
       }
     }
     // 制限時間がきたらスコア更新しない
-    if (this.timeLabel.text >= TIME_LIMIT) return;
+    if (this.timeLabel.text >= TIME_LIMIT) {
+      if (this.score >= MAX_SCORE * 0.3) this.isGameClear = true;
+      return;
+    }
     // スコア計算
     if (isScoreGet === SCORE_GET) {
       this.score += 10;
@@ -576,7 +595,6 @@ phina.define('MainScene', {
         const currentY = sprite.y;
         const currentRotate = sprite.rotate;
         const random = Math.floor(Math.random() * 6);
-        console.log(random);
         if (random % 6 == 0) {
           sprite.x += 5;
         } else if (random % 6 == 1) {
@@ -589,6 +607,15 @@ phina.define('MainScene', {
           sprite.rotate = 20;
         } else {
           sprite.rotate = -20;
+        }
+      },
+      /**
+       * 家族の顔を切り替え
+       * @param face_pattern string success miss ""
+       **/
+      changeFamFace: function(face_pattern) {
+        for (let i = 1; i <= 6;i++) {
+          eval('this.spriteFam' + i + '.setImage("Fam' + i + face_pattern  + '")');
         }
       }
 });
