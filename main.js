@@ -86,11 +86,16 @@ var ASSETS = {
     'Word21success':   './image/msg_p_21.png',
     'Word22success':   './image/msg_p_22.png',
     'Word23success':   './image/msg_p_23.png',
+    'BgHeader':        './image/bg_header.png',
   }
 }
 
 // 座標情報
 const spriteInfo = {
+  'BgHeader': {
+    'x': 420,
+    'y': 125
+  },
   'Fam1': {
     'x': 70,
     'y': 160
@@ -336,6 +341,10 @@ const PLAYER_LINE_Y = 240;
 const TIME_LIMIT = 60;
 // 移動速度
 const MOVE_SPEED = 15;
+// スコア発生管理関数
+const SCORE_GET     = 'success';
+const SCORE_STAY    = 'stay';
+const SCORE_FAILURE = 'failure';
 
 // wordオブジェクト
 const aryLaneX = {};
@@ -408,7 +417,7 @@ phina.define('MainScene', {
     // wordを動かす
     this.moveWord();
     // 1レーンでもfalseがあるとscoreが下がっていく
-    let isScoreGet = true;
+    let isScoreGet = SCORE_STAY;
     for (var key in keyScore) {
       // キーを押している間、スコアを更新し、ライトをoffにする
       if (keyboard.getKey(key)) {
@@ -419,7 +428,7 @@ phina.define('MainScene', {
         // ボタンを押している間にwordが通っていたらmiss
         const isHitWord = this.checkWordHit(eval('aryLane' + key));
         if (isHitWord['isHit']) {
-          isScoreGet = false;
+          isScoreGet = SCORE_FAILURE;
           // wordブロックをピンクに
           eval('this.sprite' + isHitWord['hitKey'] + '.setImage("' + isHitWord['hitKey'] + '")');
           // 顔を泣き顔に
@@ -429,12 +438,13 @@ phina.define('MainScene', {
         // 離している、かつwordブロックがplayer_lineに重なっている間はスコア加算し、顔を笑顔に
         const isHitWord = this.checkWordHit(eval('aryLane' + key));
         if (isHitWord['isHit']) {
+          isScoreGet = SCORE_GET;
           // wordブロックをピンクに
           eval('this.sprite' + isHitWord['hitKey'] + '.setImage("' + isHitWord['hitKey'] + 'success")');
           // this.spriteXXX.setImage('XXXoff')をeval評価 顔を笑顔に
           eval('this.spriteFam' + keyScore[key]['famIndex'] + '.setImage("Fam' + keyScore[key]['famIndex'] + 'success' +'")');
         } else {
-          isScoreGet = false;
+          isScoreGet = SCORE_FAILURE;
           // 顔を泣き顔に
           eval('this.spriteFam' + keyScore[key]['famIndex'] + '.setImage("Fam' + keyScore[key]['famIndex'] + 'miss' +'")');
         }
@@ -447,9 +457,9 @@ phina.define('MainScene', {
     // 制限時間がきたらスコア更新しない
     if (this.timeLabel.text >= TIME_LIMIT) return;
     // スコア計算
-    if (isScoreGet) {
+    if (isScoreGet === SCORE_GET) {
       this.score += 10;
-    } else {
+    } else if (isScoreGet === SCORE_FAILURE){
       this.score -= 10;
     }
   },
@@ -466,7 +476,6 @@ phina.define('MainScene', {
     // mock処理
     for (var key in ary_lane) {
       if (ary_lane[key].y - ary_lane[key].height / 2 <= PLAYER_LINE_Y && PLAYER_LINE_Y <= (ary_lane[key].y + ary_lane[key].height / 2)) {
-        console.log('true');
         wordHitInfo['isHit']  = true;
         wordHitInfo['hitKey'] = key;
         return wordHitInfo;
