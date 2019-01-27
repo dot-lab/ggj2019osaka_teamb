@@ -90,6 +90,17 @@ var ASSETS = {
     'Word23success':   './image/msg_p_23.png',
     'BgHeader':        './image/bg_header.png',
     'ClearLine':       './image/clear_line.png',
+    // TitleScene 用 Assets
+    'StartBtn': './image/btn_start_off.png',
+    'StartBtnOn': './image/btn_start_on.png',
+    'TitleBg': './image/bg_title.png',
+    // ResultScene用 Assets
+    'ClearTxt': './image/txt_clear.png',
+    'NotClearTxt': './image/txt_not_clear.png',
+    'RetryBtn': './image/btn_retry_off.png',
+    'RetryBtnOn': './image/btn_retry_on.png',
+    'BackToTitleBtn': './image/btn_back_off.png',
+    'BackToTitleBtnOn': './image/btn_back_on.png'
   }
 }
 
@@ -167,10 +178,10 @@ const spriteInfo = {
 
 const spriteWordInfo = {
   'Word1': {
-    'x': 60,
+    'x': 200,
     'y': 1200,
     'time': 5,
-    'button': 'X',
+    'button': 'C',
   },
   'Word2': {
     'x': 620,
@@ -248,7 +259,7 @@ const spriteWordInfo = {
     'x': 60,
     'y': 1200,
     'time': 39,
-    'button': 'B',
+    'button': 'X',
   },
   'Word15': {
     'x': 620,
@@ -287,10 +298,10 @@ const spriteWordInfo = {
     'button': 'C',
   },
   'Word21': {
-    'x': 620,
+    'x': 760,
     'y': 1200,
     'time': 49,
-    'button': 'N',
+    'button': 'M',
   },
   'Word22': {
     'x': 60,
@@ -361,6 +372,39 @@ const aryLaneV = {};
 const aryLaneB = {};
 const aryLaneN = {};
 const aryLaneM = {};
+
+// TitleScene ここから
+var talkStart;
+phina.define('TitleScene', {
+  superClass: 'DisplayScene',
+  init: function() {
+    this.superInit({
+      width: SCREEN_WIDTH,
+      height: SCREEN_HEIGHT,
+    });
+    // BackGround
+    var backGround = Sprite('TitleBg').addChildTo(this).setPosition(512,384);
+
+    // talkStart Btn
+    talkStart = Sprite('StartBtnOn').addChildTo(this).setPosition(this.gridX.center(),680);
+    talkStart.setInteractive(true);
+    talkStart.onpointend = function() {
+      // MainSceneへ移行
+      this.getParent().exit();
+    };
+  },
+  update: function(e) {
+    talkStart.setImage('StartBtnOn');
+    // console.log("x:"+e.pointer.position.x);
+    // console.log("y:"+e.pointer.position.y);
+    if (e.pointer.position.y > 620 && e.pointer.position.y < 730) { 
+      if (e.pointer.position.x > 240 && e.pointer.position.x < 820) {
+        talkStart.setImage('StartBtn');
+      }
+    }
+  },
+});
+// TitleScene ここまで
 
 // MainScene クラスを定義
 phina.define('MainScene', {
@@ -494,6 +538,10 @@ phina.define('MainScene', {
     // 制限時間がきたらスコア更新しない
     if (this.timeLabel.text >= TIME_LIMIT) {
       if (this.score >= MAX_SCORE * 0.3) this.isGameClear = true;
+      this.exit({
+        clearFlag: this.isGameClear,
+        score: Math.floor((this.score / 2) / 10)
+      });
       return;
     }
     // スコア計算
@@ -620,11 +668,100 @@ phina.define('MainScene', {
       }
 });
 
+// ResultScene ここから
+var backBtn,retryBtn;
+phina.define('ResultScene', {
+  superClass: 'DisplayScene',
+  // クリアフラグとスコアを受け取る
+  init: function(param) {
+    this.superInit(param);
+    this.superInit({
+      width: SCREEN_WIDTH,
+      height: SCREEN_HEIGHT,
+    });
+    // backGround
+    var backGround = Sprite("Bg6").addChildTo(this).setPosition(512, 384);
+
+    // clear or notClear
+    var message;
+    if (param.clearFlag) {
+      message = Sprite('ClearTxt').addChildTo(this).setPosition(518,168);
+    } else {
+      message = Sprite('NotClearTxt').addChildTo(this).setPosition(518,168);
+    }
+    // スコア表示部分
+    var score = Label({
+      text: param.score,
+      fontSize: 140
+    });
+    if (param.clearFlag) {
+      score.fill = '#f5a623';
+    } else {
+      score.fill = '#43a1e3';
+    }
+    score.addChildTo(this).setPosition(this.gridX.center(),374);
+    var persent = Label({
+      text: '%',
+      fontSize: 100
+    });
+    if (param.clearFlag) {
+      persent.fill = '#f5a623';
+    } else {
+      persent.fill = '#43a1e3';
+    }
+    persent.addChildTo(this).setPosition(698,384);
+    // retry Btn
+    retryBtn = Sprite('RetryBtnOn').addChildTo(this).setPosition(this.gridX.center(),514);
+    retryBtn.setInteractive(true);
+    retryBtn.onpointend = function() {
+      this.getParent().exit({
+        nextLabel: 'main',
+      });
+    }
+    // back Btn
+    backBtn = Sprite('BackToTitleBtnOn').addChildTo(this).setPosition(this.gridX.center(),634);
+    backBtn.setInteractive(true);
+    backBtn.onpointend = function() {
+      this.getParent().exit();
+    }
+  },
+  update: function(e) {
+    backBtn.setImage('BackToTitleBtnOn');
+    retryBtn.setImage('RetryBtnOn');
+    if (e.pointer.position.x > 240 && e.pointer.position.x < 820) {
+      if (e.pointer.position.y > 578 && e.pointer.position.y < 690) { 
+        backBtn.setImage('BackToTitleBtn');
+      }
+      if (e.pointer.position.y > 454 && e.pointer.position.y < 569) {
+        retryBtn.setImage('RetryBtn');
+      }
+    }
+  }
+});
+// ResultScene ここまで
+
 // メイン処理
 phina.main(function() {
   // アプリケーション生成
   var app = GameApp({
     startLabel: 'title',
+    scenes: [
+      {
+        className: 'TitleScene',
+        label: 'title',
+        nextLabel: 'main',
+      },
+      {
+        className: 'MainScene',
+        label: 'main',
+        nextLabel: 'result',
+      },
+      {
+        className: 'ResultScene',
+        label: 'result',
+        nextLabel: 'title',
+      },
+    ],
     width: SCREEN_WIDTH,
     height: SCREEN_HEIGHT,
     assets: ASSETS
