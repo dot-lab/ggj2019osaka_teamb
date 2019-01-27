@@ -136,11 +136,11 @@ const spriteInfo = {
     'x': 490,
     'y': 240,
   },
-  'KeyM': {
+  'KeyN': {
     'x': 630,
     'y': 240,
   },
-  'KeyN': {
+  'KeyM': {
     'x': 770,
     'y': 240,
   },
@@ -323,12 +323,12 @@ const keyScore = {
   },
   'N': {
     'score': 1,
-    'assetKey': 'KeyM',
+    'assetKey': 'KeyN',
     'famIndex': 5
   },
   'M': {
     'score': 0.2,
-    'assetKey': 'KeyN',
+    'assetKey': 'KeyM',
     'famIndex': 6
   },
 }
