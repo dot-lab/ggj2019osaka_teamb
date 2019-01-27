@@ -458,9 +458,9 @@ phina.define('MainScene', {
     if (this.timeLabel.text >= TIME_LIMIT) return;
     // スコア計算
     if (isScoreGet === SCORE_GET) {
-      this.score += 10;
+      this.score += 5;
     } else if (isScoreGet === SCORE_FAILURE){
-      this.score -= 10;
+      this.score -= 30;
     }
   },
   /**
@@ -495,10 +495,10 @@ phina.define('MainScene', {
        this.spriteBarInside.setImage('BarInside');
        this.spriteBarOutside.setImage('BarOutside');
      }
-     this.spriteBarInside.height = 598 * this.score / MAX_SCORE;
      // 上限下限を設定
      if (this.score > MAX_SCORE) this.score = MAX_SCORE;
      if (this.score < 0) this.score = 0;
+     this.spriteBarInside.height = 598 * this.score / MAX_SCORE;
      // 表示位置を調整
      this.spriteBarInside.y = spriteInfo['BarInside']['y'] + (598 - this.spriteBarInside.height)  / 2;
    },
